@@ -118,7 +118,7 @@ CartesianForceController::on_deactivate(const rclcpp_lifecycle::State & previous
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::return_type CartesianForceController::update(const rclcpp::Time & time,
+controller_interface::return_type CartesianForceController::update_and_write_commands(const rclcpp::Time & time,
                                                                    const rclcpp::Duration & period)
 {
   // Synchronize the internal model and the real robot

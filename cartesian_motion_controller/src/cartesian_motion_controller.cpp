@@ -43,7 +43,7 @@
 #include <cmath>
 
 #include "cartesian_controller_base/Utility.h"
-#include "controller_interface/controller_interface.hpp"
+#include "controller_interface/chainable_controller_interface.hpp"
 #include "rclcpp/clock.hpp"
 #include "rclcpp/duration.hpp"
 
@@ -71,6 +71,9 @@ CartesianMotionController::on_configure(const rclcpp_lifecycle::State & previous
   {
     return ret;
   }
+  target_available_ = false;
+
+  reference_interfaces_.resize(7, std::numeric_limits<double>::quiet_NaN());
 
   m_target_frame_subscr = get_node()->create_subscription<geometry_msgs::msg::PoseStamped>(
     get_node()->get_name() + std::string("/target_frame"), 3,
@@ -99,9 +102,27 @@ CartesianMotionController::on_deactivate(const rclcpp_lifecycle::State & previou
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
-controller_interface::return_type CartesianMotionController::update(const rclcpp::Time & time,
-                                                                    const rclcpp::Duration & period)
+controller_interface::return_type CartesianMotionController::update_and_write_commands(
+  const rclcpp::Time & time, const rclcpp::Duration & period)
 {
+  if (Base::chained_mode_available_)
+  {
+    m_target_frame = KDL::Frame(
+      KDL::Rotation::Quaternion(Base::reference_interfaces_[3], Base::reference_interfaces_[4],
+                                Base::reference_interfaces_[5], Base::reference_interfaces_[6]),
+      KDL::Vector(Base::reference_interfaces_[0], Base::reference_interfaces_[1],
+                  Base::reference_interfaces_[2]));
+
+    std::cout << std::endl
+              << Base::reference_interfaces_[0] << std::endl
+              << Base::reference_interfaces_[1] << std::endl
+              << Base::reference_interfaces_[2] << std::endl
+              << Base::reference_interfaces_[3] << std::endl
+              << Base::reference_interfaces_[4] << std::endl
+              << Base::reference_interfaces_[5] << std::endl
+              << Base::reference_interfaces_[6] << std::flush;
+  }
+
   // Synchronize the internal model and the real robot
   Base::m_ik_solver->synchronizeJointPositions(Base::m_joint_state_pos_handles);
 
@@ -197,11 +218,30 @@ void CartesianMotionController::targetFrameCallback(
                          Base::m_robot_base_link.c_str(), target->header.frame_id.c_str());
     return;
   }
+  std::cout << std::flush << "in target frame" << (target)->pose.orientation.x << std::endl;
+  rt_buffer_ptr_.writeFromNonRT(target);
+  target_available_ = true;
+}
 
-  m_target_frame = KDL::Frame(
-    KDL::Rotation::Quaternion(target->pose.orientation.x, target->pose.orientation.y,
-                              target->pose.orientation.z, target->pose.orientation.w),
-    KDL::Vector(target->pose.position.x, target->pose.position.y, target->pose.position.z));
+controller_interface::return_type CartesianMotionController::update_reference_from_subscribers()
+{
+  if (!this->isActive())
+  {
+    return controller_interface::return_type::OK;
+  }
+
+  if (target_available_)
+  {
+    auto target = rt_buffer_ptr_.readFromRT();
+    std::cout << std::flush << (*target)->pose.position.y << std::endl;
+    m_target_frame = KDL::Frame(
+      KDL::Rotation::Quaternion((*target)->pose.orientation.x, (*target)->pose.orientation.y,
+                                (*target)->pose.orientation.z, (*target)->pose.orientation.w),
+      KDL::Vector((*target)->pose.position.x, (*target)->pose.position.y,
+                  (*target)->pose.position.z));
+  }
+
+  return controller_interface::return_type::OK;
 }
 
 }  // namespace cartesian_motion_controller
@@ -210,4 +250,4 @@ void CartesianMotionController::targetFrameCallback(
 #include <pluginlib/class_list_macros.hpp>
 
 PLUGINLIB_EXPORT_CLASS(cartesian_motion_controller::CartesianMotionController,
-                       controller_interface::ControllerInterface)
+                       controller_interface::ChainableControllerInterface)

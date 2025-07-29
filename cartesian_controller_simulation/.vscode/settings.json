@@ -1,0 +1,24 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/saksham/checkout/work_ws/colcon_ws/build/rmd_startup",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/rmd_startup/lib/python3.10/site-packages",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/joint_velocity_change_controller_interfaces/local/lib/python3.10/dist-packages",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/interactive_tf_publisher_interfaces/local/lib/python3.10/dist-packages",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/dual_mpc_closed_loop_interfaces/local/lib/python3.10/dist-packages",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/dro_controller_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages",
+        ""
+    ],
+    "python.analysis.extraPaths": [
+        "/home/saksham/checkout/work_ws/colcon_ws/build/rmd_startup",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/rmd_startup/lib/python3.10/site-packages",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/joint_velocity_change_controller_interfaces/local/lib/python3.10/dist-packages",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/interactive_tf_publisher_interfaces/local/lib/python3.10/dist-packages",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/dual_mpc_closed_loop_interfaces/local/lib/python3.10/dist-packages",
+        "/home/saksham/checkout/work_ws/colcon_ws/install/dro_controller_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages",
+        ""
+    ]
+}

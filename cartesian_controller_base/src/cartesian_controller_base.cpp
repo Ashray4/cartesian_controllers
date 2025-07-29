@@ -70,6 +70,7 @@ CartesianControllerBase::command_interface_configuration() const
       conf.names.push_back(joint_name + std::string("/").append(type));
     }
   }
+
   return conf;
 }
 
@@ -101,6 +102,7 @@ CartesianControllerBase::on_init()
     auto_declare<int>("solver.iterations", 1);
     auto_declare<bool>("solver.publish_state_feedback", false);
     m_initialized = true;
+    chained_mode_available_ = false;
   }
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
@@ -317,6 +319,10 @@ CartesianControllerBase::on_activate(const rclcpp_lifecycle::State & previous_st
   writeJointControlCmds();
 
   m_active = true;
+
+  std::fill(reference_interfaces_.begin(), reference_interfaces_.end(),
+            std::numeric_limits<double>::quiet_NaN());
+  
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
@@ -334,6 +340,39 @@ CartesianControllerBase::on_shutdown(const rclcpp_lifecycle::State & previous_st
     m_active = false;
   }
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+}
+
+bool CartesianControllerBase::on_set_chained_mode(bool /*chained_mode*/) { 
+  chained_mode_available_ = true;
+   RCLCPP_INFO(get_node()->get_logger(), "in chained mode");
+  return true; }
+
+std::vector<hardware_interface::CommandInterface>
+CartesianControllerBase::on_export_reference_interfaces()
+{
+  std::vector<hardware_interface::CommandInterface> reference_interfaces;
+
+  auto type = controller_interface::interface_configuration_type::INDIVIDUAL;
+
+  std::vector<std::string> cartesian_interfaces_names_ = {"x","y","z","x_orientation","y_orientation","z_orientation","w_orientation"};
+  for (const auto & type : cartesian_interfaces_names_)
+  {
+      reference_interface_names_.push_back(type);
+  }
+
+  for (size_t i = 0; i < reference_interface_names_.size(); ++i)
+  {
+    std::cout << std::endl << reference_interface_names_[i] << std::endl;
+    reference_interfaces.push_back(hardware_interface::CommandInterface(
+      get_node()->get_name(), reference_interface_names_[i], &reference_interfaces_[i]));
+    std::cout << reference_interfaces[i] << std::endl;
+  }
+  std::cout << "The refrence interfaces size is: " << reference_interface_names_.size()
+            << std::endl;
+  
+  reference_interfaces_.assign(reference_interface_names_.size(),0.0);
+
+  return reference_interfaces;
 }
 
 void CartesianControllerBase::writeJointControlCmds()
@@ -367,18 +406,21 @@ void CartesianControllerBase::writeJointControlCmds()
   // Write all available types.
   for (const auto & type : m_cmd_interface_types)
   {
-    if (type == hardware_interface::HW_IF_POSITION)
+    for (size_t i = 0; i < m_joint_names.size(); ++i)
     {
-      for (size_t i = 0; i < m_joint_names.size(); ++i)
+      if (type == hardware_interface::HW_IF_POSITION)
       {
-        m_joint_cmd_pos_handles[i].get().set_value(m_simulated_joint_motion.positions[i]);
+        for (size_t i = 0; i < m_joint_names.size(); ++i)
+        {
+          m_joint_cmd_pos_handles[i].get().set_value(m_simulated_joint_motion.positions[i]);
+        }
       }
-    }
-    if (type == hardware_interface::HW_IF_VELOCITY)
-    {
-      for (size_t i = 0; i < m_joint_names.size(); ++i)
+      if (type == hardware_interface::HW_IF_VELOCITY)
       {
-        m_joint_cmd_vel_handles[i].get().set_value(m_simulated_joint_motion.velocities[i]);
+        for (size_t i = 0; i < m_joint_names.size(); ++i)
+        {
+          m_joint_cmd_vel_handles[i].get().set_value(m_simulated_joint_motion.velocities[i]);
+        }
       }
     }
   }
