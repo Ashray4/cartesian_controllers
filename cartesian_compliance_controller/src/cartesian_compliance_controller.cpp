@@ -40,7 +40,7 @@
 #include <cartesian_compliance_controller/cartesian_compliance_controller.h>
 
 #include "cartesian_controller_base/Utility.h"
-#include "controller_interface/controller_interface.hpp"
+#include "controller_interface/chainable_controller_interface.hpp"
 
 namespace cartesian_compliance_controller
 {
@@ -129,7 +129,7 @@ CartesianComplianceController::on_deactivate(const rclcpp_lifecycle::State & pre
   return TYPE::SUCCESS;
 }
 
-controller_interface::return_type CartesianComplianceController::update(
+controller_interface::return_type CartesianComplianceController::update_and_write_commands(
   const rclcpp::Time & time, const rclcpp::Duration & period)
 {
   // Synchronize the internal model and the real robot

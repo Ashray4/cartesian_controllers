@@ -322,7 +322,7 @@ CartesianControllerBase::on_activate(const rclcpp_lifecycle::State & previous_st
 
   std::fill(reference_interfaces_.begin(), reference_interfaces_.end(),
             std::numeric_limits<double>::quiet_NaN());
-  
+
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
@@ -342,35 +342,42 @@ CartesianControllerBase::on_shutdown(const rclcpp_lifecycle::State & previous_st
   return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
 }
 
-bool CartesianControllerBase::on_set_chained_mode(bool /*chained_mode*/) { 
+bool CartesianControllerBase::on_set_chained_mode(bool /*chained_mode*/)
+{
   chained_mode_available_ = true;
-   RCLCPP_INFO(get_node()->get_logger(), "in chained mode");
-  return true; }
+  RCLCPP_INFO(get_node()->get_logger(), "in chained mode");
+  return true;
+}
 
 std::vector<hardware_interface::CommandInterface>
 CartesianControllerBase::on_export_reference_interfaces()
 {
   std::vector<hardware_interface::CommandInterface> reference_interfaces;
 
-  auto type = controller_interface::interface_configuration_type::INDIVIDUAL;
+  std::vector<std::string> cartesian_interfaces_names_;
+  if (controller_mode_)
+  {
+    cartesian_interfaces_names_ = {
+      "x", "y", "z", "x_orientation", "y_orientation", "z_orientation", "w_orientation"};
+  }
+  else
+  {
+    cartesian_interfaces_names_ = {
+      "wrench_x", "wrench_y", "wrench_z", "torque_x", "torque_y", "torque_z"};
+  }
 
-  std::vector<std::string> cartesian_interfaces_names_ = {"x","y","z","x_orientation","y_orientation","z_orientation","w_orientation"};
   for (const auto & type : cartesian_interfaces_names_)
   {
-      reference_interface_names_.push_back(type);
+    reference_interface_names_.push_back(type);
   }
 
   for (size_t i = 0; i < reference_interface_names_.size(); ++i)
   {
-    std::cout << std::endl << reference_interface_names_[i] << std::endl;
     reference_interfaces.push_back(hardware_interface::CommandInterface(
       get_node()->get_name(), reference_interface_names_[i], &reference_interfaces_[i]));
-    std::cout << reference_interfaces[i] << std::endl;
   }
-  std::cout << "The refrence interfaces size is: " << reference_interface_names_.size()
-            << std::endl;
-  
-  reference_interfaces_.assign(reference_interface_names_.size(),0.0);
+
+  reference_interfaces_.assign(reference_interface_names_.size(), 0.0);
 
   return reference_interfaces;
 }

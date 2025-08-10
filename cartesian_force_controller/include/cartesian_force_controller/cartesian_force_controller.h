@@ -43,7 +43,8 @@
 #include <cartesian_controller_base/ROS2VersionConfig.h>
 #include <cartesian_controller_base/cartesian_controller_base.h>
 
-#include <controller_interface/controller_interface.hpp>
+#include "realtime_tools/realtime_buffer.hpp"
+#include <controller_interface/chainable_controller_interface.hpp>
 
 #include "geometry_msgs/msg/wrench_stamped.hpp"
 
@@ -90,6 +91,8 @@ public:
   controller_interface::return_type update_and_write_commands(const rclcpp::Time & time,
                                            const rclcpp::Duration & period) override;
 
+  controller_interface::return_type update_reference_from_subscribers() override;
+
   using Base = cartesian_controller_base::CartesianControllerBase;
 
 protected:
@@ -112,6 +115,7 @@ private:
   ctrl::Vector6D m_ft_sensor_wrench;
   std::string m_ft_sensor_ref_link;
   KDL::Frame m_ft_sensor_transform;
+  realtime_tools::RealtimeBuffer<geometry_msgs::msg::WrenchStamped::SharedPtr> rt_buffer_ptr_;
 
   /**
      * Allow users to choose whether to specify their target wrenches in the
@@ -120,6 +124,7 @@ private:
      * intuitive for tele-manipulation.
      */
   bool m_hand_frame_control;
+  bool target_available_;
 };
 
 }  // namespace cartesian_force_controller

@@ -54,6 +54,7 @@ CartesianMotionController::CartesianMotionController() : Base::CartesianControll
 rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
 CartesianMotionController::on_init()
 {
+  Base::controller_mode_ = true;
   const auto ret = Base::on_init();
   if (ret != rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS)
   {
@@ -112,15 +113,6 @@ controller_interface::return_type CartesianMotionController::update_and_write_co
                                 Base::reference_interfaces_[5], Base::reference_interfaces_[6]),
       KDL::Vector(Base::reference_interfaces_[0], Base::reference_interfaces_[1],
                   Base::reference_interfaces_[2]));
-
-    std::cout << std::endl
-              << Base::reference_interfaces_[0] << std::endl
-              << Base::reference_interfaces_[1] << std::endl
-              << Base::reference_interfaces_[2] << std::endl
-              << Base::reference_interfaces_[3] << std::endl
-              << Base::reference_interfaces_[4] << std::endl
-              << Base::reference_interfaces_[5] << std::endl
-              << Base::reference_interfaces_[6] << std::flush;
   }
 
   // Synchronize the internal model and the real robot
@@ -218,7 +210,7 @@ void CartesianMotionController::targetFrameCallback(
                          Base::m_robot_base_link.c_str(), target->header.frame_id.c_str());
     return;
   }
-  std::cout << std::flush << "in target frame" << (target)->pose.orientation.x << std::endl;
+
   rt_buffer_ptr_.writeFromNonRT(target);
   target_available_ = true;
 }
@@ -233,7 +225,6 @@ controller_interface::return_type CartesianMotionController::update_reference_fr
   if (target_available_)
   {
     auto target = rt_buffer_ptr_.readFromRT();
-    std::cout << std::flush << (*target)->pose.position.y << std::endl;
     m_target_frame = KDL::Frame(
       KDL::Rotation::Quaternion((*target)->pose.orientation.x, (*target)->pose.orientation.y,
                                 (*target)->pose.orientation.z, (*target)->pose.orientation.w),
