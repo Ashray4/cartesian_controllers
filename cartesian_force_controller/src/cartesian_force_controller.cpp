@@ -77,6 +77,7 @@ CartesianForceController::on_configure(const rclcpp_lifecycle::State & previous_
   }
 
   target_available_ = false;
+  reference_interfaces_.resize(6, std::numeric_limits<double>::quiet_NaN());
 
   // Make sure sensor link is part of the robot chain
   m_ft_sensor_ref_link = get_node()->get_parameter("ft_sensor_ref_link").as_string();
@@ -125,6 +126,7 @@ controller_interface::return_type CartesianForceController::update_and_write_com
                                                                    const rclcpp::Duration & period)
 { 
 
+  std::cout<<"Base::reference_interfaces_"<< Base::reference_interfaces_.size()<<std::endl;
     if (Base::chained_mode_available_)
   {
     m_target_wrench[0] = Base::reference_interfaces_[0];
