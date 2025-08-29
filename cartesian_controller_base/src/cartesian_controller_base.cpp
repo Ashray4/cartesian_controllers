@@ -413,21 +413,18 @@ void CartesianControllerBase::writeJointControlCmds()
   // Write all available types.
   for (const auto & type : m_cmd_interface_types)
   {
-    for (size_t i = 0; i < m_joint_names.size(); ++i)
+    if (type == hardware_interface::HW_IF_POSITION)
     {
-      if (type == hardware_interface::HW_IF_POSITION)
+      for (size_t i = 0; i < m_joint_names.size(); ++i)
       {
-        for (size_t i = 0; i < m_joint_names.size(); ++i)
-        {
-          m_joint_cmd_pos_handles[i].get().set_value(m_simulated_joint_motion.positions[i]);
-        }
+        static_cast<void>(m_joint_cmd_pos_handles[i].get().set_value(m_simulated_joint_motion.positions[i]));
       }
-      if (type == hardware_interface::HW_IF_VELOCITY)
+    }
+    if (type == hardware_interface::HW_IF_VELOCITY)
+    {
+      for (size_t i = 0; i < m_joint_names.size(); ++i)
       {
-        for (size_t i = 0; i < m_joint_names.size(); ++i)
-        {
-          m_joint_cmd_vel_handles[i].get().set_value(m_simulated_joint_motion.velocities[i]);
-        }
+        static_cast<void>(m_joint_cmd_vel_handles[i].get().set_value(m_simulated_joint_motion.velocities[i]));
       }
     }
   }

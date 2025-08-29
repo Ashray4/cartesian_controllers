@@ -213,7 +213,7 @@ private:
   {
     for (size_t i = 0; i < m_joint_cmd_vel_handles.size(); ++i)
     {
-      m_joint_cmd_vel_handles[i].get().set_value(0.0);
+      static_cast<void>(m_joint_cmd_vel_handles[i].get().set_value(0.0));
     }
   }
 
