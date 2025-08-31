@@ -103,6 +103,7 @@ protected:
      */
   ctrl::Vector6D computeForceError();
   std::string m_new_ft_sensor_ref;
+  ctrl::Vector6D m_target_wrench;
   void setFtSensorReferenceFrame(const std::string & new_ref);
 
 private:
@@ -111,7 +112,7 @@ private:
 
   rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr m_target_wrench_subscriber;
   rclcpp::Subscription<geometry_msgs::msg::WrenchStamped>::SharedPtr m_ft_sensor_wrench_subscriber;
-  ctrl::Vector6D m_target_wrench;
+  
   ctrl::Vector6D m_ft_sensor_wrench;
   std::string m_ft_sensor_ref_link;
   KDL::Frame m_ft_sensor_transform;

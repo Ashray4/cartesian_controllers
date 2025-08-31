@@ -358,12 +358,12 @@ CartesianControllerBase::on_export_reference_interfaces()
   if (controller_mode_)
   {
     cartesian_interfaces_names_ = {
-      "x", "y", "z", "x_orientation", "y_orientation", "z_orientation", "w_orientation"};
+      "position.x", "position.y", "position.z", "orientation.x", "orientation.y", "orientation.z", "orientation.w"};
   }
   else
   {
     cartesian_interfaces_names_ = {
-      "wrench_x", "wrench_y", "wrench_z", "torque_x", "torque_y", "torque_z"};
+      "wrench.x", "wrench.y", "wrench.z", "torque.x", "torque.y", "torque.z"};
   }
 
   for (const auto & type : cartesian_interfaces_names_)

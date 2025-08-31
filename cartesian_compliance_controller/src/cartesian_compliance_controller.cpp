@@ -137,6 +137,16 @@ controller_interface::return_type CartesianComplianceController::update_and_writ
 
   // Control the robot motion in such a way that the resulting net force
   // vanishes. This internal control needs some simulation time steps.
+
+  if (Base::chained_mode_available_)
+  {
+    ForceBase::m_target_wrench[0] = Base::reference_interfaces_[0];
+    ForceBase::m_target_wrench[1] = Base::reference_interfaces_[1];
+    ForceBase::m_target_wrench[2] = Base::reference_interfaces_[2];
+    ForceBase::m_target_wrench[3] = Base::reference_interfaces_[3];
+    ForceBase::m_target_wrench[4] = Base::reference_interfaces_[4];
+    ForceBase::m_target_wrench[5] = Base::reference_interfaces_[5];
+  }
   for (int i = 0; i < Base::m_iterations; ++i)
   {
     // The internal 'simulation time' is deliberately independent of the outer
@@ -145,7 +155,7 @@ controller_interface::return_type CartesianComplianceController::update_and_writ
 
     // Compute the net force
     ctrl::Vector6D error = computeComplianceError();
-
+    std::cout << "error: " << error << std::endl;
     // Turn Cartesian error into joint motion
     Base::computeJointControlCmds(error, internal_period);
   }
@@ -179,10 +189,15 @@ ctrl::Vector6D CartesianComplianceController::computeComplianceError()
   return net_force;
 }
 
+controller_interface::return_type CartesianComplianceController::update_reference_from_subscribers()
+{
+  MotionBase::update_reference_from_subscribers();
+  ForceBase::update_reference_from_subscribers();
+  return controller_interface::return_type::OK;
+}
 }  // namespace cartesian_compliance_controller
-
 // Pluginlib
 #include <pluginlib/class_list_macros.hpp>
 
 PLUGINLIB_EXPORT_CLASS(cartesian_compliance_controller::CartesianComplianceController,
-                       controller_interface::ControllerInterface)
+                       controller_interface::ChainableControllerInterface)

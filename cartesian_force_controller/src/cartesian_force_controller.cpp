@@ -126,7 +126,6 @@ controller_interface::return_type CartesianForceController::update_and_write_com
                                                                    const rclcpp::Duration & period)
 { 
 
-  std::cout<<"Base::reference_interfaces_"<< Base::reference_interfaces_.size()<<std::endl;
     if (Base::chained_mode_available_)
   {
     m_target_wrench[0] = Base::reference_interfaces_[0];
@@ -136,7 +135,7 @@ controller_interface::return_type CartesianForceController::update_and_write_com
     m_target_wrench[4] = Base::reference_interfaces_[4];
     m_target_wrench[5] = Base::reference_interfaces_[5];
   }
-
+  
   // Synchronize the internal model and the real robot
   Base::m_ik_solver->synchronizeJointPositions(Base::m_joint_state_pos_handles);
 
@@ -235,7 +234,7 @@ controller_interface::return_type CartesianForceController::update_reference_fro
     m_target_wrench[4] = (*target)->wrench.torque.y;
     m_target_wrench[5] = (*target)->wrench.torque.z;
   }
-
+  
   return controller_interface::return_type::OK;
 }
 
