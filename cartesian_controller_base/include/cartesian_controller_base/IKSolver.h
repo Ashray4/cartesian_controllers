@@ -178,7 +178,7 @@ protected:
       return m_handle->declare_parameter<ParameterT>(name, default_value);
     }
     else
-    { 
+    {
       return m_handle->get_parameter(name).get_value<ParameterT>();
     }
   }

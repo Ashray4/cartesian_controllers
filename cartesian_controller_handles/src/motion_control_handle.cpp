@@ -336,3 +336,4 @@ geometry_msgs::msg::PoseStamped MotionControlHandle::getEndEffectorPose()
 
 PLUGINLIB_EXPORT_CLASS(cartesian_controller_handles::MotionControlHandle,
                        controller_interface::ControllerInterface)
+                       

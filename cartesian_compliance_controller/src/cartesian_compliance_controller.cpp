@@ -155,6 +155,7 @@ controller_interface::return_type CartesianComplianceController::update_and_writ
 
     // Compute the net force
     ctrl::Vector6D error = computeComplianceError();
+    
     // Turn Cartesian error into joint motion
     Base::computeJointControlCmds(error, internal_period);
   }
