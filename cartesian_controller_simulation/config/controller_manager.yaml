@@ -26,9 +26,6 @@ controller_manager:
     invalid_cartesian_force_controller:
       type: cartesian_force_controller/CartesianForceController
 
-    cartesian_chaining_example_controller:
-      type: cartesian_chaining_example_controller/CartesianChainingExampleController
-      
 cartesian_compliance_controller:
   ros__parameters:
 

@@ -70,7 +70,6 @@ CartesianControllerBase::command_interface_configuration() const
       conf.names.push_back(joint_name + std::string("/").append(type));
     }
   }
-
   return conf;
 }
 
@@ -417,14 +416,14 @@ void CartesianControllerBase::writeJointControlCmds()
     {
       for (size_t i = 0; i < m_joint_names.size(); ++i)
       {
-        static_cast<void>(m_joint_cmd_pos_handles[i].get().set_value(m_simulated_joint_motion.positions[i]));
+        m_joint_cmd_pos_handles[i].get().set_value(m_simulated_joint_motion.positions[i]);
       }
     }
     if (type == hardware_interface::HW_IF_VELOCITY)
     {
       for (size_t i = 0; i < m_joint_names.size(); ++i)
       {
-        static_cast<void>(m_joint_cmd_vel_handles[i].get().set_value(m_simulated_joint_motion.velocities[i]));
+        m_joint_cmd_vel_handles[i].get().set_value(m_simulated_joint_motion.velocities[i]);
       }
     }
   }

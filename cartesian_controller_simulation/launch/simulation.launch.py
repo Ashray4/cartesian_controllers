@@ -122,11 +122,13 @@ def generate_launch_description():
 
     # Inactive controllers
     inactive_list = [
-        "cartesian_motion_controller",
         "cartesian_compliance_controller",
         "cartesian_force_controller",
+        "cartesian_motion_controller",
         "motion_control_handle",
         "joint_trajectory_controller",
+        "invalid_cartesian_compliance_controller",
+        "invalid_cartesian_force_controller",
     ]
     state = "--inactive"
     inactive_spawners = [
