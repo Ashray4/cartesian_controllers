@@ -72,7 +72,7 @@ bool IKSolver::setStartState(
     // Add additional plausibility check just in case.
     if (joint_pos_handles[i].get().get_interface_name() == hardware_interface::HW_IF_POSITION)
     { 
-      #if defined CARTESIAN_CONTROLLERS_JAZZY
+      #if defined CARTESIAN_CONTROLLERS_JAZZY || defined CARTESIAN_CONTROLLERS_ROLLING
         m_current_positions(i) = joint_pos_handles[i].get().get_optional().value();
       #else
         m_current_positions(i) = joint_pos_handles[i].get().get_value();
@@ -100,7 +100,7 @@ void IKSolver::synchronizeJointPositions(
     // Add additional plausibility check just in case.
     if (joint_pos_handles[i].get().get_interface_name() == hardware_interface::HW_IF_POSITION)
     { 
-      #if defined CARTESIAN_CONTROLLERS_JAZZY
+      #if defined CARTESIAN_CONTROLLERS_JAZZY || defined CARTESIAN_CONTROLLERS_ROLLING
         m_current_positions(i) = joint_pos_handles[i].get().get_optional().value();
       #else
         m_current_positions(i) = joint_pos_handles[i].get().get_value();
